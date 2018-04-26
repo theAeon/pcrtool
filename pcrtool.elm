@@ -27,9 +27,9 @@ view : AppState -> Html.Html AppEvent
 view state =
     Html.div []
         [ (Html.h1 [Attrs.style [("text-align", "center")]] [ Html.text "PCRTool" ])
-        , (Html.input [ Events.onInput (\s -> UpdateSeq s), Attrs.placeholder "target sequence"] [])
-        , (Html.input [ Events.onInput (\s -> UpdateFor s), Attrs.placeholder "forward sequence"] [])
-        , (Html.input [ Events.onInput (\s -> UpdateRev s), Attrs.placeholder "reverse sequence"] [])
+        , (Html.textarea [ Events.onInput (\s -> UpdateSeq s), Attrs.placeholder "target sequence"] [])
+        , (Html.textarea [ Events.onInput (\s -> UpdateFor s), Attrs.placeholder "forward sequence"] [])
+        , (Html.textarea [ Events.onInput (\s -> UpdateRev s), Attrs.placeholder "reverse sequence"] [])
         ]
 
 
