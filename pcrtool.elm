@@ -94,10 +94,7 @@ initialState =
      , reverse = ""
      , aminoacid = ""
      , modSequence = ""}
-<<<<<<< HEAD
 
-=======
->>>>>>> 789063dda9848b493d04d3d1f72ebe2f3156bd1f
 type AppEvent
     = UpdateSeq String |
       UpdateFor String |
