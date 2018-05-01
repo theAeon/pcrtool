@@ -153,7 +153,7 @@ update e s =
         UpdateSeq str -> {s | sequence = str}
         UpdateFor str -> {s | forward = str}
         UpdateRev str -> {s | reverse = str}
-        ReCalculate -> {s | modsequence = , aminoacid = }
+        ReCalculate ->   {s | modsequence = , aminoacid = }
 
 
 main =
