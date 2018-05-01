@@ -19,7 +19,7 @@ initialState =
      , forward = ""
      , reverse = ""
      , aminoacid = ""
-     , ModSequence = ""}
+     , modSequence = ""}
 type AppEvent
     = UpdateSeq String |
       UpdateFor String |
