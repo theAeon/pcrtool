@@ -4,6 +4,80 @@ import Html
 import Html.Attributes as Attrs
 import Html.Events as Events
 
+type Nucleotide =
+      A
+    | U
+    | C
+    | G
+
+aacase : Seq -> String
+aacase =
+    UUU -> "F"
+    UUC -> "F"
+    UUA -> "L"
+    UUG -> "L"
+    UCU -> "S"
+    UCC -> "S"
+    UCA -> "S"
+    UCG -> "S"
+    UAU -> "Y"
+    UAC -> "Y"
+    CUA -> "L"
+    CUG -> "L"
+    UGU -> "C"
+    UGC -> "C"
+    CUU -> "L"
+    CUC -> "L"
+    CCU -> "P"
+    CCC -> "P"
+    CCA -> "P"
+    CCG -> "P"
+    CAU -> "H"
+    CAC -> "H"
+    CAA -> "Q"
+    CAG -> "Q"
+    CGU -> "R"
+    CGC -> "R"
+    CGA -> "R"
+    CGG -> "R"
+    AUU -> "I"
+    AUC -> "I"
+    AUA -> "I"
+    AUG -> "M"
+    ACU -> "T"
+    ACC -> "T"
+    ACA -> "T"
+    ACG -> "T"
+    AAU -> "N"
+    AAC -> "N"
+    AAA -> "K"
+    AAG -> "K"
+    AGU -> "S"
+    AGC -> "S"
+    AGA -> "R"
+    AGG -> "R"
+    GUU -> "V"
+    GUC -> "V"
+    GUA -> "V"
+    GUG -> "V"
+    GCU -> "A"
+    GCC -> "A"
+    GCA -> "A"
+    GCG -> "A"
+    GAU -> "D"
+    GAC -> "D"
+    GAA -> "E"
+    GAG -> "E"
+    GGU -> "G"
+    GGC -> "G"
+    GGA -> "G"
+    GGG -> "G"
+    UGG -> "W"
+    UGA -> "Stop"
+    UAA -> "Stop"
+    UAG -> "Stop"
+    _ -> ""
+
 
 type alias AppState =
     { sequence : String
@@ -19,7 +93,11 @@ initialState =
      , forward = ""
      , reverse = ""
      , aminoacid = ""
-     , ModSequence = ""}
+     , modSequence = ""}
+<<<<<<< HEAD
+
+=======
+>>>>>>> 789063dda9848b493d04d3d1f72ebe2f3156bd1f
 type AppEvent
     = UpdateSeq String |
       UpdateFor String |
