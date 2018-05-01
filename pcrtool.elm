@@ -10,13 +10,28 @@ type RNANucleotide =
     | C
     | G
 
+type DNANucleotide =
+      A
+    | T
+    | C
+    | G
 
-toNuc : Char -> Maybe RNANucleotide
+transcribe : Maybe DNANucleotide -> Maybe RNANucleotide
+transcribe nuc =
+    case nuc of
+    Just A -> Just U
+    Just T -> Just A
+    Just C -> Just G
+    Just G -> Just C
+    Nothing -> Nothing
+
+
+toNuc : Char -> Maybe DNANucleotide
 
 toNuc c =
     if c == 'A' || 'a' then Just A else
         if c == 'C' || 'c' then Just C else
-            if c == 'U' || 'u' then Just U else
+            if c == 'T' || 't' then Just T else
               if c == 'G' || 'g' then Just G else Nothing
 
 codonMake : List Maybe RNANucleotide -> List (RNANucleotide,RNANucleotide, RNANucleotide)
