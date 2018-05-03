@@ -11,115 +11,106 @@ type RNANucleotide =
     | G
 
 type DNANucleotide =
-      A
-    | T
-    | C
-    | G
+      DNA
+    | DNT
+    | DNC
+    | DNG
 
 transcribe : Maybe DNANucleotide -> Maybe RNANucleotide
 transcribe nuc =
     case nuc of
-    Just A -> Just U
-    Just T -> Just A
-    Just C -> Just G
-    Just G -> Just C
+    Just DNA -> Just U
+    Just DNT -> Just A
+    Just DNC -> Just G
+    Just DNG -> Just C
     Nothing -> Nothing
 
 
 toNuc : Char -> Maybe DNANucleotide
 
 toNuc c =
-    if c == 'A' || 'a' then Just A else
-        if c == 'C' || 'c' then Just C else
-            if c == 'T' || 't' then Just T else
-              if c == 'G' || 'g' then Just G else Nothing
+    if c == 'A' || c == 'a' then Just DNA else
+        if c == 'C' || c == 'c' then Just DNC else
+            if c == 'T' || c == 't' then Just DNT else
+              if c == 'G' || c == 'g' then Just DNG else Nothing
 
-codonMake : List Maybe RNANucleotide -> List (RNANucleotide,RNANucleotide, RNANucleotide)
-
+codonMake : List (Maybe RNANucleotide) -> List (RNANucleotide,RNANucleotide, RNANucleotide)
 codonMake list =
     case list of
-    Just x::Just y::Just z::t -> (x, y, z) :: (codonMake t)
+    (Just x)::(Just y)::(Just z)::t -> (x, y, z) :: codonMake t
     Nothing::t -> codonMake t
-    f::Nothing::t -> f :: codonMake t
-    f::s::Nothing::t -> f :: s:: codonMake t
+    (f)::Nothing::t -> codonMake (f :: t)
+    (f)::(s)::Nothing::t -> codonMake (f:: s::t)
     _ -> []
 
 
 aacase : (RNANucleotide, RNANucleotide, RNANucleotide) -> String
 aacase tup =
     case tup of
-    (U, U, U) -> "F"
-    (U, U, C) -> "F"
-    (U, U, A) -> "L"
-    (U, U, G) -> "L"
-    (U, C, U) -> "S"
-    (U, C, C) -> "S"
-    (U, C, A) -> "S"
-    (U, C, G) -> "S"
-    (U, A, U) -> "Y"
-    (U, A, C) -> "Y"
-    (C, U, A) -> "L"
-    (C, U, G) -> "L"
-    (U, G, U) -> "C"
-    (U, G, C) -> "C"
-    (C, U, U) -> "L"
-    (C, U, C) -> "L"
-    (C, C, U) -> "P"
-    (C, C, C) -> "P"
-    (C, C, A) -> "P"
-    (C, C, G) -> "P"
-    (C, A, U) -> "H"
-    (C, A, C) -> "H"
-    (C, A, A) -> "Q"
-    (C, A, G) -> "Q"
-    (C, G, U) -> "R"
-    (C, G, C) -> "R"
-    (C, G, A) -> "R"
-    (C, G, G) -> "R"
-    (A, U, U) -> "I"
-    (A, U, C) -> "I"
-    (A, U, A) -> "I"
-    (A, U, G) -> "M"
-    (A, C, U) -> "T"
-    (A, C, C) -> "T"
-    (A, C, A) -> "T"
-    (A, C, G) -> "T"
-    (A, A, U) -> "N"
-    (A, A, C) -> "N"
-    (A, A, A) -> "K"
-    (A, A, G) -> "K"
-    (A, G, U) -> "S"
-    (A, G, C) -> "S"
-    (A, G, A) -> "R"
-    (A, G, G) -> "R"
-    (G, U, U) -> "V"
-    (G, U, C) -> "V"
-    (G, U, A) -> "V"
-    (G, U, G) -> "V"
-    (G, C, U) -> "A"
-    (G, C, C) -> "A"
-    (G, C, A) -> "A"
-    (G, C, G) -> "A"
-    (G, A, U) -> "D"
-    (G, A, C) -> "D"
-    (G, A, A) -> "E"
-    (G, A, G) -> "E"
-    (G, G, U) -> "G"
-    (G, G, C) -> "G"
-    (G, G, A) -> "G"
-    (G, G, G) -> "G"
-    (U, G, G) -> "W"
-    (U, G, A) -> "Stop"
-    (U, A, A) -> "Stop"
-    (U, A, G) -> "Stop"
+    (U, _, _) -> 
+        case tup of
+        (_, U, _) -> case tup of
+                    (_, _, U) -> "F"
+                    (_, _, C) -> "F"
+                    (_, _, A) -> "L"
+                    (_, _, G) -> "L"
+        (_, C, _) -> "S"
+        (_, A, _) -> case tup of
+                    (_, _, U) -> "Y"
+                    (_, _, C) -> "Y"
+                    (_, _, A) -> "Stop"
+                    (_, _, G) -> "Stop"
+        (_, G, _) -> case tup of
+                    (_, _, U) -> "C"
+                    (_, _, C) -> "C"
+                    (_, _, A) -> "Stop"
+                    (_, _, G) -> "W"
+    (C, _, _) -> 
+        case tup of
+        (_, U, _) -> "L"
+        (_, C, _) -> "P"
+        (_, A, _) -> case tup of
+                    (_, _, U) -> "H"
+                    (_, _, C) -> "H"
+                    (_, _, A) -> "Q"
+                    (_, _, G) -> "Q"
+        (_, G, _) -> "R"
 
-
+    (A, _, _) -> 
+        case tup of
+        (_, U, _) -> case tup of
+                    (_, _, U) -> "I"
+                    (_, _, C) -> "I"
+                    (_, _, A) -> "I"
+                    (_, _, G) -> "M"
+        (_, C, _) -> "T"
+        (_, A, _) -> case tup of
+                    (_, _, U) -> "N"
+                    (_, _, C) -> "N"
+                    (_, _, A) -> "K"
+                    (_, _, G) -> "K"
+        (_, G, _) -> case tup of
+                    (_, _, U) -> "S"
+                    (_, _, C) -> "S"
+                    (_, _, A) -> "R"
+                    (_, _, G) -> "R"
+    (G, _, _) -> 
+        case tup of
+        (_, U, _) -> "V"
+        (_, C, _) -> "A"
+        (_, A, _) -> case tup of
+                    (_, _, U) -> "D"
+                    (_, _, C) -> "D"
+                    (_, _, A) -> "E"
+                    (_, _, G) -> "E"
+        (_, G, _) -> "G"
+        
 type alias AppState =
     { sequence : String
     , forward: String
     , reverse: String
     , aminoacid: String
-    , modsequence : String}
+    , modSequence : String}
 
 
 initialState : AppState
@@ -141,9 +132,9 @@ view : AppState -> Html.Html AppEvent
 view state =
     Html.div []
         [ (Html.h1 [Attrs.style [("text-align", "center")]] [ Html.text "PCRTool" ])
-        , (Html.textarea [ Events.onInput (\s -> UpdateSeq s), Attrs.placeholder "target sequence", Attrs.style [("resize", "none")]] [])
-        , (Html.textarea [ Events.onInput (\s -> UpdateFor s), Attrs.placeholder "forward sequence", Attrs.style [("resize", "none")]] [])
-        , (Html.textarea [ Events.onInput (\s -> UpdateRev s), Attrs.placeholder "reverse sequence", Attrs.style [("resize", "none")]] [])
+        , (Html.textarea [ Events.onInput (\s -> UpdateSeq s), Attrs.placeholder "target sequence", Attrs.style [("resize", "none"), ("margin", "auto auto 1em 2em")]] [])
+        , (Html.textarea [ Events.onInput (\s -> UpdateFor s), Attrs.placeholder "forward sequence", Attrs.style [("resize", "none"), ("margin", "auto auto 1em 2em")]] [])
+        , (Html.textarea [ Events.onInput (\s -> UpdateRev s), Attrs.placeholder "reverse sequence", Attrs.style [("resize", "none"), ("margin", "auto auto 1em 2em")]] [])
         , Html.div [] [Html.p [] [], Html.p [] []]]
 
 
@@ -153,7 +144,7 @@ update e s =
         UpdateSeq str -> {s | sequence = str}
         UpdateFor str -> {s | forward = str}
         UpdateRev str -> {s | reverse = str}
-        ReCalculate ->   {s | modsequence = , aminoacid = }
+        ReCalculate -> s   --{s    {modsequence = , aminoacid = -} }
 
 
 main =
