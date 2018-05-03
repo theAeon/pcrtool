@@ -145,25 +145,20 @@ update e s =
         UpdateSeq str -> {s | sequence = str}
         UpdateFor str -> {s | forward = str}
         UpdateRev str -> {s | reverse = str}
-        ReCalculate ->   {s | modsequence = 
-
-            
+        ReCalculate ->  s
 
 
-        ,
-         aminoacid = }
+seqToNuc : List String -> List Maybe DNANucleotide
 
+seqToNuc seq =
+    List.map (toNuc) String.toList seq
 
-forwardBind : 
-forwardBind state =
-    let
-        sequence = List.map toNuc String.toList(state.sequence)
-        , forward = List.map toNuc String.toList(state.forward)
-
-    in
-        case (sequence, forward) of
-            (hs::ts, hf::tf) -> if hs != ht then 
-
+forwardBind : List Maybe DNANucleotide -> List Maybe DNANucleotide -> Int
+forwardBind seq for =
+    case (seq, for) of
+        (hs::ts, hf::tf) -> if hs /= hf then forwardBind ts tf else
+                                hs :: (forwardBind ts tf)
+ 
 
 
 
