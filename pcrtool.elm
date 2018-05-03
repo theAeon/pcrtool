@@ -44,6 +44,7 @@ codonMake list =
     _ -> []
 
 
+
 aacase : (RNANucleotide, RNANucleotide, RNANucleotide) -> String
 aacase tup =
     case tup of
@@ -144,7 +145,35 @@ update e s =
         UpdateSeq str -> {s | sequence = str}
         UpdateFor str -> {s | forward = str}
         UpdateRev str -> {s | reverse = str}
-        ReCalculate -> s   --{s    {modsequence = , aminoacid = -} }
+        ReCalculate ->   {s | modsequence = 
+
+            
+
+
+        ,
+         aminoacid = }
+
+
+forwardBind : 
+forwardBind state =
+    let
+        sequence = List.map toNuc String.toList(state.sequence)
+        , forward = List.map toNuc String.toList(state.forward)
+
+    in
+        case (sequence, forward) of
+            (hs::ts, hf::tf) -> if hs != ht then 
+
+
+
+
+
+
+
+
+
+
+
 
 
 main =
