@@ -288,7 +288,11 @@ update e s =
             { s | reverse = str }
 
         ReCalculate ->
-            s
+            let
+                modSeq =
+                    (amplified (forwardBind (seqToNuc s.sequence) (seqToNuc s.forward) (seqToNuc s.forward)) (reverseBind s.sequence (seqToNuc s.reverse)) s.sequence)
+            in
+                { s | modSequence = modSeq, aminoacid = List.foldr (++) " " (List.map aacase (codonMake (List.map transcribe (seqToNuc modSeq)))) }
 
 
 seqToNuc : String -> List (Maybe DNANucleotide)
@@ -296,20 +300,34 @@ seqToNuc seq =
     List.map toNuc (String.toList seq)
 
 
-forwardBind : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide) -> Int
-forwardBind seq for =
+forwardBind : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide) -> List (Maybe DNANucleotide) -> Int
+forwardBind seq for ori =
     case ( seq, for ) of
         ( hs :: ts, hf :: tf ) ->
             if hs /= hf then
-                forwardBind ts tf
+                1 + forwardBind ts tf ori
             else
-                1 + (forwardBind ts tf)
+                (forwardBind seq ori ori)
 
         ( _, _ ) ->
             0
 
-reversePrimer : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide)
-reversePrimer rp =
+
+reverseBind : String -> List (Maybe DNANucleotide) -> Int
+reverseBind seq rev =
+    let
+        reversedprimer =
+            (List.reverse rev)
+
+        reversedseq =
+            (String.reverse seq)
+    in
+        forwardBind (List.map translate (seqToNuc reversedseq)) reversedprimer reversedprimer
+
+
+amplified : Int -> Int -> String -> String
+amplified i1 i2 seq =
+    String.dropLeft i1 (String.dropRight i2 seq)
 
 
 main =
