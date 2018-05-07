@@ -284,17 +284,12 @@ update e s =
         UpdateFor str ->
             { s | forward = str }
 
-seqToNuc : List String -> List Maybe DNANucleotide
+        UpdateRev str ->
+            { s | reverse = str }
 
-seqToNuc seq =
-    List.map (toNuc) String.toList seq
+        ReCalculate ->
+            s
 
-forwardBind : List Maybe DNANucleotide -> List Maybe DNANucleotide -> Int
-forwardBind seq for =
-    case (seq, for) of
-        (hs::ts, hf::tf) -> if hs /= hf then forwardBind ts tf else
-                                hs :: (forwardBind ts tf)
- 
 
 seqToNuc : String -> List (Maybe DNANucleotide)
 seqToNuc seq =
@@ -313,16 +308,8 @@ forwardBind seq for =
         ( _, _ ) ->
             0
 
-reversePrim = 
-
-
--- reversePrimer : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide)
--- reversePrimer rp =
--- reverseBind : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide) -> Int
--- reverseBind seq rev =
-
-
-
+reversePrimer : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide)
+reversePrimer rp =
 
 
 main =
