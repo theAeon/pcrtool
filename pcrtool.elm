@@ -26,6 +26,15 @@ transcribe nuc =
     Nothing -> Nothing
 
 
+transcribeDNA : Maybe DNANucleotide -> Maybe DNANucleotide
+transcribe nuc =
+    case nuc of
+    Just DNA -> Just T
+    Just DNT -> Just A
+    Just DNC -> Just G
+    Just DNG -> Just C
+    Nothing -> Nothing
+
 toNuc : Char -> Maybe DNANucleotide
 
 toNuc c =
@@ -148,23 +157,24 @@ update e s =
         ReCalculate ->  s
 
 
-seqToNuc : List String -> List Maybe DNANucleotide
+seqToNuc : String -> List (Maybe DNANucleotide)
 
 seqToNuc seq =
-    List.map (toNuc) String.toList seq
+    List.map toNuc (String.toList seq)
 
-forwardBind : List Maybe DNANucleotide -> List Maybe DNANucleotide -> Int
+forwardBind : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide) -> Int
 forwardBind seq for =
     case (seq, for) of
-        (hs::ts, hf::tf) -> if hs /= hf then forwardBind ts tf else
-                                hs :: (forwardBind ts tf)
- 
+        (hs::ts, hf::tf) -> if hs /= hf then (forwardBind ts tf) else
+                                1 + (forwardBind ts tf)
+
+        ( _ , _ ) -> 0
 
 
 
+reversePrim : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide)
 
-
-
+reversePrim = 
 
 
 
