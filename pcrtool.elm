@@ -271,6 +271,7 @@ view state =
         , (Html.textarea [ Events.onInput (\s -> UpdateSeq s), Attrs.placeholder "target sequence", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
         , (Html.textarea [ Events.onInput (\s -> UpdateFor s), Attrs.placeholder "forward sequence", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
         , (Html.textarea [ Events.onInput (\s -> UpdateRev s), Attrs.placeholder "reverse sequence", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
+        , (Html.button [ Events.onClick ReCalculate ] [ Html.text "Loop recursion" ])
         , Html.div [] [ Html.p [] [], Html.p [] [] ]
         ]
 
@@ -302,15 +303,18 @@ seqToNuc seq =
 
 forwardBind : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide) -> List (Maybe DNANucleotide) -> Int
 forwardBind seq for ori =
-    case ( seq, for ) of
-        ( hs :: ts, hf :: tf ) ->
-            if hs /= hf then
-                1 + forwardBind ts tf ori
-            else
-                (forwardBind seq ori ori)
+    case ( seq, for, ori ) of
+        ( hs :: ts, _, [] ) ->
+            1 + forwardBind ts for ori
 
-        ( _, _ ) ->
-            0
+        ( hs :: ts, hf :: tf, _ ) ->
+            if hs /= hf then
+                1 + forwardBind ts ori ori
+            else
+                (forwardBind ts tf ori)
+
+        ( _, _, _ ) ->
+            (0)
 
 
 reverseBind : String -> List (Maybe DNANucleotide) -> Int
@@ -331,4 +335,8 @@ amplified i1 i2 seq =
 
 
 main =
-    view initialState
+    Html.beginnerProgram
+        { view = view
+        , update = update
+        , model = initialState
+        }
