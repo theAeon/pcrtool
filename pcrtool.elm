@@ -19,42 +19,36 @@ type DNANucleotide
     | DNG
 
 
-transcribe : Maybe DNANucleotide -> Maybe RNANucleotide
+transcribe : DNANucleotide -> RNANucleotide
 transcribe nuc =
     case nuc of
-        Just DNA ->
-            Just U
+        DNA ->
+            U
 
-        Just DNT ->
-            Just A
+        DNT ->
+            A
 
-        Just DNC ->
-            Just G
+        DNC ->
+            G
 
-        Just DNG ->
-            Just C
-
-        Nothing ->
-            Nothing
+        DNG ->
+            C
 
 
-translate : Maybe DNANucleotide -> Maybe DNANucleotide
+translate : DNANucleotide -> DNANucleotide
 translate nuc =
     case nuc of
-        Just DNA ->
-            Just DNT
+        DNA ->
+            DNT
 
-        Just DNT ->
-            Just DNA
+        DNT ->
+            DNA
 
-        Just DNC ->
-            Just DNG
+        DNC ->
+            DNG
 
-        Just DNG ->
-            Just DNC
-
-        Nothing ->
-            Nothing
+        DNG ->
+            DNC
 
 
 toNuc : Char -> Maybe DNANucleotide
@@ -71,20 +65,27 @@ toNuc c =
         Nothing
 
 
-codonMake : List (Maybe RNANucleotide) -> List ( RNANucleotide, RNANucleotide, RNANucleotide )
+toStr : DNANucleotide -> String
+toStr nuc =
+    case nuc of
+        DNA ->
+            "A"
+
+        DNC ->
+            "C"
+
+        DNT ->
+            "T"
+
+        DNG ->
+            "G"
+
+
+codonMake : List RNANucleotide -> List ( RNANucleotide, RNANucleotide, RNANucleotide )
 codonMake list =
     case list of
-        (Just x) :: (Just y) :: (Just z) :: t ->
+        x :: y :: z :: t ->
             ( x, y, z ) :: codonMake t
-
-        Nothing :: t ->
-            codonMake t
-
-        f :: Nothing :: t ->
-            codonMake (f :: t)
-
-        f :: s :: Nothing :: t ->
-            codonMake (f :: s :: t)
 
         _ ->
             []
@@ -98,144 +99,144 @@ aacase tup =
                 ( _, U, _ ) ->
                     case tup of
                         ( _, _, U ) ->
-                            "F"
+                            "F "
 
                         ( _, _, C ) ->
-                            "F"
+                            "F "
 
                         ( _, _, A ) ->
-                            "L"
+                            "L "
 
                         ( _, _, G ) ->
-                            "L"
+                            "L "
 
                 ( _, C, _ ) ->
-                    "S"
+                    "S "
 
                 ( _, A, _ ) ->
                     case tup of
                         ( _, _, U ) ->
-                            "Y"
+                            "Y "
 
                         ( _, _, C ) ->
-                            "Y"
+                            "Y "
 
                         ( _, _, A ) ->
-                            "Stop"
+                            "Stop "
 
                         ( _, _, G ) ->
-                            "Stop"
+                            "Stop "
 
                 ( _, G, _ ) ->
                     case tup of
                         ( _, _, U ) ->
-                            "C"
+                            "C "
 
                         ( _, _, C ) ->
-                            "C"
+                            "C "
 
                         ( _, _, A ) ->
-                            "Stop"
+                            "Stop "
 
                         ( _, _, G ) ->
-                            "W"
+                            "W "
 
         ( C, _, _ ) ->
             case tup of
                 ( _, U, _ ) ->
-                    "L"
+                    "L "
 
                 ( _, C, _ ) ->
-                    "P"
+                    "P "
 
                 ( _, A, _ ) ->
                     case tup of
                         ( _, _, U ) ->
-                            "H"
+                            "H "
 
                         ( _, _, C ) ->
-                            "H"
+                            "H "
 
                         ( _, _, A ) ->
-                            "Q"
+                            "Q "
 
                         ( _, _, G ) ->
-                            "Q"
+                            "Q "
 
                 ( _, G, _ ) ->
-                    "R"
+                    "R "
 
         ( A, _, _ ) ->
             case tup of
                 ( _, U, _ ) ->
                     case tup of
                         ( _, _, U ) ->
-                            "I"
+                            "I "
 
                         ( _, _, C ) ->
-                            "I"
+                            "I "
 
                         ( _, _, A ) ->
-                            "I"
+                            "I "
 
                         ( _, _, G ) ->
-                            "M"
+                            "M "
 
                 ( _, C, _ ) ->
-                    "T"
+                    "T "
 
                 ( _, A, _ ) ->
                     case tup of
                         ( _, _, U ) ->
-                            "N"
+                            "N "
 
                         ( _, _, C ) ->
-                            "N"
+                            "N "
 
                         ( _, _, A ) ->
-                            "K"
+                            "K "
 
                         ( _, _, G ) ->
-                            "K"
+                            "K "
 
                 ( _, G, _ ) ->
                     case tup of
                         ( _, _, U ) ->
-                            "S"
+                            "S "
 
                         ( _, _, C ) ->
-                            "S"
+                            "S "
 
                         ( _, _, A ) ->
-                            "R"
+                            "R "
 
                         ( _, _, G ) ->
-                            "R"
+                            "R "
 
         ( G, _, _ ) ->
             case tup of
                 ( _, U, _ ) ->
-                    "V"
+                    "V "
 
                 ( _, C, _ ) ->
-                    "A"
+                    "A "
 
                 ( _, A, _ ) ->
                     case tup of
                         ( _, _, U ) ->
-                            "D"
+                            "D "
 
                         ( _, _, C ) ->
-                            "D"
+                            "D "
 
                         ( _, _, A ) ->
-                            "E"
+                            "E "
 
                         ( _, _, G ) ->
-                            "E"
+                            "E "
 
                 ( _, G, _ ) ->
-                    "G"
+                    "G "
 
 
 type alias AppState =
@@ -269,9 +270,14 @@ view state =
     Html.div []
         [ (Html.h1 [ Attrs.style [ ( "text-align", "center" ) ] ] [ Html.text "PCRTool" ])
         , (Html.textarea [ Events.onInput (\s -> UpdateSeq s), Attrs.placeholder "target sequence", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
-        , (Html.textarea [ Events.onInput (\s -> UpdateFor s), Attrs.placeholder "forward sequence", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
-        , (Html.textarea [ Events.onInput (\s -> UpdateRev s), Attrs.placeholder "reverse sequence", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
-        , (Html.button [ Events.onClick ReCalculate ] [ Html.text "Loop recursion" ])
+        , (Html.textarea [ Events.onInput (\s -> UpdateFor s), Attrs.placeholder "forward primer", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
+        , (Html.textarea [ Events.onInput (\s -> UpdateRev s), Attrs.placeholder "reverse primer", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
+        , (Html.div [ Attrs.style [ ( "display", "flex" ), ( "flex-direction", "column" ) ] ]
+            [ (Html.button [ Attrs.style [ ( "margin", "auto auto 1em 2em" ) ], Events.onClick ReCalculate ] [ Html.text "Run PCR!" ])
+            , (Html.textarea [ Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ), ( "width", "41.8%" ) ] ] [ Html.text state.modSequence ])
+            , (Html.textarea [ Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ), ( "width", "41.8%" ) ] ] [ Html.text state.aminoacid ])
+            ]
+          )
         , Html.div [] [ Html.p [] [], Html.p [] [] ]
         ]
 
@@ -291,17 +297,22 @@ update e s =
         ReCalculate ->
             let
                 modSeq =
-                    (amplified (forwardBind (seqToNuc s.sequence) (seqToNuc s.forward) (seqToNuc s.forward)) (reverseBind s.sequence (seqToNuc s.reverse)) s.sequence)
+                    (amplified (forwardBind (seqToNuc s.sequence) (seqToNuc s.forward) (seqToNuc s.forward)) (reverseBind s.sequence (seqToNuc s.reverse)) s.sequence) ++ (appendRev s.reverse)
             in
-                { s | modSequence = modSeq, aminoacid = List.foldr (++) " " (List.map aacase (codonMake (List.map transcribe (seqToNuc modSeq)))) }
+                { s | modSequence = modSeq, aminoacid = List.foldr (++) "" (List.map aacase (codonMake (List.map transcribe (seqToNuc modSeq)))) }
 
 
-seqToNuc : String -> List (Maybe DNANucleotide)
+seqToNuc : String -> List DNANucleotide
 seqToNuc seq =
-    List.map toNuc (String.toList seq)
+    List.filterMap toNuc (String.toList seq)
 
 
-forwardBind : List (Maybe DNANucleotide) -> List (Maybe DNANucleotide) -> List (Maybe DNANucleotide) -> Int
+foldNuc : List String -> String
+foldNuc list =
+    List.foldr (++) "" list
+
+
+forwardBind : List DNANucleotide -> List DNANucleotide -> List DNANucleotide -> Int
 forwardBind seq for ori =
     case ( seq, for, ori ) of
         ( hs :: ts, _, [] ) ->
@@ -317,7 +328,12 @@ forwardBind seq for ori =
             (0)
 
 
-reverseBind : String -> List (Maybe DNANucleotide) -> Int
+appendRev : String -> String
+appendRev string =
+    foldNuc (List.map (toStr) (List.map translate (seqToNuc (String.reverse string))))
+
+
+reverseBind : String -> List DNANucleotide -> Int
 reverseBind seq rev =
     let
         reversedprimer =
@@ -326,12 +342,12 @@ reverseBind seq rev =
         reversedseq =
             (String.reverse seq)
     in
-        forwardBind (List.map translate (seqToNuc reversedseq)) reversedprimer reversedprimer
+        forwardBind (seqToNuc reversedseq) (List.map translate reversedprimer) (List.map translate reversedprimer)
 
 
 amplified : Int -> Int -> String -> String
 amplified i1 i2 seq =
-    String.dropLeft i1 (String.dropRight i2 seq)
+    String.dropLeft i1 (String.dropRight i2 (foldNuc (List.map toStr (seqToNuc seq))))
 
 
 main =
