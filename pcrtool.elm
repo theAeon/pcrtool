@@ -243,8 +243,10 @@ type alias AppState =
     { sequence : String
     , forward : String
     , reverse : String
-    , aminoacid : String
     , modSequence : String
+    , aminoacid : String
+    , aminoacid2 : String
+    , aminoacid3 : String
     }
 
 
@@ -254,6 +256,8 @@ initialState =
     , forward = ""
     , reverse = ""
     , aminoacid = ""
+    , aminoacid2 = ""
+    , aminoacid3 = ""
     , modSequence = ""
     }
 
@@ -269,16 +273,23 @@ view : AppState -> Html.Html AppEvent
 view state =
     Html.div []
         [ (Html.h1 [ Attrs.style [ ( "text-align", "center" ) ] ] [ Html.text "PCRTool" ])
-        , (Html.textarea [ Events.onInput (\s -> UpdateSeq s), Attrs.placeholder "target sequence", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
-        , (Html.textarea [ Events.onInput (\s -> UpdateFor s), Attrs.placeholder "forward primer", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
-        , (Html.textarea [ Events.onInput (\s -> UpdateRev s), Attrs.placeholder "reverse primer", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [])
-        , (Html.div [ Attrs.style [ ( "display", "flex" ), ( "flex-direction", "column" ) ] ]
-            [ (Html.button [ Attrs.style [ ( "margin", "auto auto 1em 2em" ) ], Events.onClick ReCalculate ] [ Html.text "Run PCR!" ])
-            , (Html.textarea [ Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ), ( "width", "41.8%" ) ] ] [ Html.text state.modSequence ])
-            , (Html.textarea [ Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ), ( "width", "41.8%" ) ] ] [ Html.text state.aminoacid ])
+        , Html.div [ Attrs.style [ ( "display", "flex" ), ( "flex-direction", "column" ), ( "justify-content", "center" ), ( "text-align", "center" ), ( "margin", "auto auto 1em 2em" ) ] ] [ Html.text "INSTRUCTIONS: Enter your target sequence and primers, then press 'Run PCR!'. If the information you entered into the fields above is valid, you'll see the resulting nucleotide sequence with your selected primers below, as well as the possible amino acid sequences that would result from these nucleotides." ]
+        , (Html.textarea [ Events.onInput (\s -> UpdateSeq s), Attrs.placeholder "target sequence", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ), ( "width", "20.9%" ) ] ] [])
+        , (Html.textarea [ Events.onInput (\s -> UpdateFor s), Attrs.placeholder "forward primer", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ), ( "width", "10.45%" ) ] ] [])
+        , (Html.textarea [ Events.onInput (\s -> UpdateRev s), Attrs.placeholder "reverse primer", Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ), ( "width", "10.45%" ) ] ] [])
+        , (Html.button [ Attrs.style [ ( "margin", "auto auto 1em 2em" ) ], Events.onClick ReCalculate ] [ Html.text "Run PCR!" ])
+        , (Html.div [ Attrs.style [ ( "display", "flexbox" ), ( "flex-direction", "column" ) ] ]
+            [ (Html.div [ Attrs.style [ ( "display", "flex" ), ( "flex-direction", "column" ), ( "flex-basis", "auto" ), ( "flex-shrink", "0" ), ( "flex-grow", "1" ) ] ]
+                [ (Html.p [ Attrs.style [ ( "margin", "auto auto 1em 2em" ) ] ] [ Html.text ("forward primer: " ++ (foldNuc (List.map (toStr) (seqToNuc (state.forward))))) ])
+                , (Html.p [ Attrs.style [ ( "margin", "auto auto 1em 2em" ) ] ] [ Html.text ("target sequence: " ++ state.modSequence) ])
+                , (Html.p [ Attrs.style [ ( "margin", "auto auto 1em 2em" ), ( "text-align", "right" ) ] ] [ Html.text ("reverse primer: " ++ (foldNuc (List.map (toStr) (seqToNuc (String.reverse state.reverse))))) ])
+                ]
+              )
+            , (Html.p [ Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [ Html.text ((state.aminoacid) ++ "(frame = 1st nucleotide of codon)") ])
+            , (Html.p [ Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [ Html.text ((state.aminoacid2) ++ "(frame = 2nd nucleotide of codon)") ])
+            , (Html.p [ Attrs.style [ ( "resize", "none" ), ( "margin", "auto auto 1em 2em" ) ] ] [ Html.text ((state.aminoacid3) ++ "(frame = 3rd nucleotide of codon)") ])
             ]
           )
-        , Html.div [] [ Html.p [] [], Html.p [] [] ]
         ]
 
 
@@ -297,9 +308,9 @@ update e s =
         ReCalculate ->
             let
                 modSeq =
-                    (amplified (forwardBind (seqToNuc s.sequence) (seqToNuc s.forward) (seqToNuc s.forward)) (reverseBind s.sequence (seqToNuc s.reverse)) s.sequence) ++ (appendRev s.reverse)
+                    (amplified (forwardBind (seqToNuc s.sequence) (seqToNuc s.forward) (seqToNuc s.forward)) (reverseBind s.sequence (seqToNuc s.reverse)) s.sequence)
             in
-                { s | modSequence = modSeq, aminoacid = List.foldr (++) "" (List.map aacase (codonMake (List.map transcribe (seqToNuc modSeq)))) }
+                { s | modSequence = modSeq, aminoacid = List.foldr (++) "" (List.map aacase (codonMake (List.map transcribe (seqToNuc modSeq)))), aminoacid2 = List.foldr (++) "" (List.map aacase (codonMake (List.map transcribe (seqToNuc (String.dropLeft 1 modSeq))))), aminoacid3 = List.foldr (++) "" (List.map aacase (codonMake (List.map transcribe (seqToNuc (String.dropLeft 2 modSeq))))) }
 
 
 seqToNuc : String -> List DNANucleotide
